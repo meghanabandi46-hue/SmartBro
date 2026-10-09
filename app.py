@@ -1,5 +1,6 @@
 import os
 import re
+import secrets
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect,
@@ -806,7 +807,7 @@ def api_subject_teacher_save_marks():
 # ---------------------------------------------------------------------
 
 @app.route('/api/support/tickets', methods=['GET', 'POST'])
-@login_required
+@role_required('support', 'student')
 def api_support_tickets():
     user_id = session['user_id']
     role = session['role']
@@ -882,20 +883,27 @@ def api_support_tickets():
     description = data.get('description', '').strip()
     priority = data.get('priority', 'medium')
 
+    allowed_categories = {'academic_difficulty', 'technical_issue', 'attendance_concern', 'personal_support', 'other'}
+    allowed_priorities = {'low', 'medium', 'high'}
     if not subject_line or not description:
         return jsonify({'error': 'Subject line and description are required.'}), 400
+    if len(subject_line) > 200 or len(description) > 5000:
+        return jsonify({'error': 'Subject line must be <= 200 characters and description <= 5000 characters.'}), 400
+    if category not in allowed_categories or priority not in allowed_priorities:
+        return jsonify({'error': 'Invalid ticket category or priority.'}), 400
 
-    # Locate student record
+    # Students can create tickets only for themselves; support must specify a real student.
     if role == 'student':
         student = query_one("SELECT id, roll_number FROM students WHERE user_id = %s", (user_id,))
     else:
+        if not student_id_val:
+            return jsonify({'error': 'A valid student roll number is required.'}), 400
         student = query_one("SELECT id, roll_number FROM students WHERE roll_number = %s", (student_id_val,))
-        if not student:
-            # Fallback to first student if not specified
-            student = query_one("SELECT id, roll_number FROM students LIMIT 1")
+    if not student:
+        return jsonify({'error': 'Student not found.'}), 404
 
-    count_row = query_one("SELECT COUNT(*) as cnt FROM support_tickets")
-    new_tck_num = f"TCK-{101 + (count_row['cnt'] if count_row else 0)}"
+    # Random suffix avoids count-based collisions after deletions or concurrent requests.
+    new_tck_num = f"TCK-{secrets.token_hex(4).upper()}"
 
     tck_id = execute(
         """INSERT INTO support_tickets 
