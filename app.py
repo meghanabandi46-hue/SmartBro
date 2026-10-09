@@ -1,6 +1,8 @@
 import os
 import re
 import secrets
+import time
+from collections import defaultdict, deque
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect,
@@ -13,6 +15,28 @@ from database.db import query_all, query_one, execute, get_active_engine
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config.from_object(Config)
+
+# Lightweight per-process login throttling. For multi-worker deployments, replace
+# this in-memory store with a shared Redis/database-backed limiter.
+_LOGIN_FAILURES = defaultdict(deque)
+
+
+def _login_is_limited(key):
+    now = time.time()
+    window = max(1, int(app.config.get('LOGIN_WINDOW_SECONDS', 300)))
+    attempts = max(1, int(app.config.get('LOGIN_MAX_ATTEMPTS', 8)))
+    failures = _LOGIN_FAILURES[key]
+    while failures and failures[0] <= now - window:
+        failures.popleft()
+    return len(failures) >= attempts
+
+
+def _record_login_failure(key):
+    _LOGIN_FAILURES[key].append(time.time())
+
+
+def _clear_login_failures(key):
+    _LOGIN_FAILURES.pop(key, None)
 
 # ---------------------------------------------------------------------
 # Role-Based Authentication & Authorization Decorators
@@ -153,12 +177,22 @@ def api_login():
     if not selected_role:
         return jsonify({'success': False, 'message': 'Please select your role from the role cards.'}), 400
 
+    # Limit repeated guesses per client IP and normalized username.
+    client_ip = request.remote_addr or 'unknown'
+    throttle_key = f"{client_ip}:{username.casefold()}"
+    if _login_is_limited(throttle_key):
+        response = jsonify({'success': False, 'message': 'Too many login attempts. Please wait a few minutes and try again.'})
+        response.status_code = 429
+        response.headers['Retry-After'] = str(max(1, int(app.config.get('LOGIN_WINDOW_SECONDS', 300))))
+        return response
+
     user = query_one(
         "SELECT * FROM users WHERE username = %s OR email = %s",
         (username, username)
     )
 
     if not user or not check_password_hash(user['password_hash'], password):
+        _record_login_failure(throttle_key)
         return jsonify({'success': False, 'message': 'Invalid username or password.'}), 401
 
     # Server-Side Role Enforcement: Prevent cross-role impersonation
@@ -175,6 +209,8 @@ def api_login():
             'success': False,
             'message': f"Role mismatch: This account belongs to role '{actual_name}', but you selected '{chosen_name}'. Please select the matching role card."
         }), 403
+
+    _clear_login_failures(throttle_key)
 
     # Establish secure session
     session.clear()
@@ -880,7 +916,7 @@ def api_support_tickets():
 
     # POST: Create new ticket
     data = request.get_json() or {}
-    student_id_val = data.get('studentId', '').strip()
+    student_id_val = str(data.get('studentId') or '').strip()
     category = data.get('category', 'other')
     subject_line = data.get('subjectLine', '').strip()
     description = data.get('description', '').strip()
