@@ -65,14 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     alertBox.className = 'alert-box';
   }
 
-  // Standard Demo Fallback Accounts (for client-side preview before Flask server is launched)
-  const fallbackAccounts = {
-    'student1': { password: 'student123', role: 'student', name: 'Meghana', redirect: 'index.html' },
-    'teacher_class': { password: 'class123', role: 'class_teacher', name: 'Dr. Raman', redirect: 'class_teacher.html' },
-    'teacher_priya': { password: 'priya123', role: 'subject_teacher', name: 'Ms. Priya', redirect: 'subject_teacher.html' },
-    'support_staff': { password: 'support123', role: 'support', name: 'Alex Patel', redirect: 'support.html' }
-  };
-
   // Form Submission
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -116,8 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
         if (data.success) {
           showAlert('Signed in successfully! Redirecting...', 'success');
-          // Save in localStorage for static backup/state syncing
-          localStorage.setItem('udaan_session', JSON.stringify(data.user));
           const roleRouteMap = {
             student: '/student',
             class_teacher: '/class-teacher',
@@ -143,50 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       throw new Error('Backend offline or static mode');
     } catch (networkErr) {
-      // 2. Client-side fallback authentication for static preview / testing before Flask starts
-      const account = fallbackAccounts[username];
-      if (!account || account.password !== password) {
-        showAlert('Invalid username or password. Check demo credentials below.');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Sign In to UDAAN <span>→</span>';
-        return;
-      }
-
-      // Check role authorization
-      if (account.role !== selectedRole) {
-        const roleNames = {
-          student: 'Student',
-          class_teacher: 'Class Teacher',
-          subject_teacher: 'Subject Teacher',
-          support: 'Support Line'
-        };
-        showAlert(`Role mismatch: This account belongs to role "${roleNames[account.role]}", but you selected "${roleNames[selectedRole]}". Please select the matching role card.`);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Sign In to UDAAN <span>→</span>';
-        return;
-      }
-
-      // Successful simulated login
-      showAlert('Signed in successfully! Redirecting...', 'success');
-      localStorage.setItem('udaan_session', JSON.stringify({
-        username: username,
-        role: account.role,
-        name: account.name
-      }));
-
-      const roleRouteMap = {
-        student: '/student',
-        class_teacher: '/class-teacher',
-        subject_teacher: '/subject-teacher',
-        support: '/support'
-      };
-      setTimeout(() => {
-        if (window.location.protocol === 'file:') {
-          window.location.href = account.redirect;
-        } else {
-          window.location.href = roleRouteMap[account.role] || '/student';
-        }
-      }, 450);
+      // Authentication must always be verified by Flask; never simulate a login in the browser.
+      showAlert('Cannot reach the login server. Start the Flask application and try again.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Sign In to UDAAN <span>→</span>';
     }
   });
 });
