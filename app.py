@@ -754,6 +754,20 @@ def api_subject_teacher_save_marks():
         if total_classes_val < 0 or attended_val < 0 or attended_val > total_classes_val:
             return jsonify({'error': 'Attendance must satisfy 0 <= attended <= total classes.'}), 400
 
+    # Validate the assessment and marks before changing either attendance or marks.
+    last_assess = None
+    if marks_val is not None:
+        last_assess = query_one(
+            """SELECT id, max_marks FROM assessments
+               WHERE class_id = %s AND subject_id = %s
+               ORDER BY sequence_order DESC LIMIT 1""",
+            (auth_check['class_id'], auth_check['subject_id'])
+        )
+        if not last_assess:
+            return jsonify({'error': 'No assessment is configured for this class and subject.'}), 400
+        if marks_val > float(last_assess['max_marks']):
+            return jsonify({'error': f"Marks cannot exceed the assessment maximum of {last_assess['max_marks']}."}), 400
+
     # Update or insert attendance
     if attended_val is not None and total_classes_val is not None:
         att = query_one(
@@ -773,17 +787,6 @@ def api_subject_teacher_save_marks():
 
     # Update latest assessment marks
     if marks_val is not None:
-        last_assess = query_one(
-            """SELECT id FROM assessments 
-               WHERE class_id = %s AND subject_id = %s 
-               ORDER BY sequence_order DESC LIMIT 1""",
-            (auth_check['class_id'], auth_check['subject_id'])
-        )
-        if not last_assess:
-            return jsonify({'error': 'No assessment is configured for this class and subject.'}), 400
-        assessment = query_one("SELECT max_marks FROM assessments WHERE id = %s", (last_assess['id'],))
-        if marks_val > float(assessment['max_marks']):
-            return jsonify({'error': f"Marks cannot exceed the assessment maximum of {assessment['max_marks']}."}), 400
         if last_assess:
             existing_mark = query_one(
                 "SELECT id FROM marks WHERE assessment_id = %s AND student_id = %s",
