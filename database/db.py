@@ -29,7 +29,7 @@ def get_mysql_connection():
             password=Config.MYSQL_PASSWORD,
             database=Config.MYSQL_DATABASE,
             connection_timeout=3,
-            autocommit=False
+            autocommit=True
         )
     except Exception as exc:
         raise RuntimeError("Unable to connect to the configured MySQL database.") from exc
