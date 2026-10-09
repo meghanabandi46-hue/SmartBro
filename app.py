@@ -726,9 +726,32 @@ def api_subject_teacher_save_marks():
     if not auth_check:
         return jsonify({'error': 'Access Denied: You are not authorized to modify marks for this subject and class.'}), 403
 
-    student = query_one("SELECT id FROM students WHERE roll_number = %s OR id = %s", (roll_number, roll_number))
+    # The target student must belong to the exact class authorized above.
+    student = query_one(
+        "SELECT id FROM students WHERE roll_number = %s AND class_id = %s",
+        (roll_number, auth_check['class_id'])
+    )
     if not student:
-        return jsonify({'error': 'Student not found'}), 404
+        return jsonify({'error': 'Student not found in the authorized class.'}), 404
+
+    # Validate numeric values before writing academic records.
+    try:
+        if marks_val is not None:
+            marks_val = float(marks_val)
+            if not (marks_val >= 0):
+                raise ValueError
+        if attended_val is not None:
+            attended_val = int(attended_val)
+        if total_classes_val is not None:
+            total_classes_val = int(total_classes_val)
+    except (TypeError, ValueError, OverflowError):
+        return jsonify({'error': 'Marks must be a non-negative number and attendance must use whole numbers.'}), 400
+
+    if (attended_val is not None or total_classes_val is not None):
+        if attended_val is None or total_classes_val is None:
+            return jsonify({'error': 'Provide both attended and total classes.'}), 400
+        if total_classes_val < 0 or attended_val < 0 or attended_val > total_classes_val:
+            return jsonify({'error': 'Attendance must satisfy 0 <= attended <= total classes.'}), 400
 
     # Update or insert attendance
     if attended_val is not None and total_classes_val is not None:
@@ -755,6 +778,11 @@ def api_subject_teacher_save_marks():
                ORDER BY sequence_order DESC LIMIT 1""",
             (auth_check['class_id'], auth_check['subject_id'])
         )
+        if not last_assess:
+            return jsonify({'error': 'No assessment is configured for this class and subject.'}), 400
+        assessment = query_one("SELECT max_marks FROM assessments WHERE id = %s", (last_assess['id'],))
+        if marks_val > float(assessment['max_marks']):
+            return jsonify({'error': f"Marks cannot exceed the assessment maximum of {assessment['max_marks']}."}), 400
         if last_assess:
             existing_mark = query_one(
                 "SELECT id FROM marks WHERE assessment_id = %s AND student_id = %s",
@@ -771,7 +799,7 @@ def api_subject_teacher_save_marks():
                     (last_assess['id'], student['id'], marks_val)
                 )
 
-    return jsonify({'success': True, 'message': 'Marks and attendance recorded successfully in MySQL database.'})
+    return jsonify({'success': True, 'message': f"Marks and attendance recorded successfully in {get_active_engine().upper()} database."})
 
 # ---------------------------------------------------------------------
 # Support Line Portal API
@@ -894,9 +922,26 @@ def api_support_reply():
     if not tck_num or not message:
         return jsonify({'error': 'Ticket ID and message are required.'}), 400
 
-    ticket = query_one("SELECT id FROM support_tickets WHERE ticket_number = %s", (tck_num,))
+    if len(message) > 5000:
+        return jsonify({'error': 'Reply must be 5000 characters or fewer.'}), 400
+
+    if session.get('role') == 'student':
+        ticket = query_one(
+            """SELECT t.id FROM support_tickets t
+               JOIN students s ON t.student_id = s.id
+               WHERE t.ticket_number = %s AND s.user_id = %s""",
+            (tck_num, session['user_id'])
+        )
+    else:
+        ticket = query_one("SELECT id FROM support_tickets WHERE ticket_number = %s", (tck_num,))
     if not ticket:
-        return jsonify({'error': 'Ticket not found'}), 404
+        # Do not disclose whether another student's ticket exists.
+        return jsonify({'error': 'Ticket not found or access denied.'}), 404
+
+    if session.get('role') == 'student' and new_status:
+        return jsonify({'error': 'Students cannot change ticket status.'}), 403
+    if session.get('role') == 'support' and new_status and new_status not in {'open', 'in_progress', 'resolved', 'closed'}:
+        return jsonify({'error': 'Invalid ticket status.'}), 400
 
     author_name = f"{session.get('name')} ({session.get('role').replace('_', ' ').title()})"
     execute(
@@ -918,7 +963,7 @@ def api_support_reply():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    debug = bool(int(os.getenv('FLASK_DEBUG', '1')))
+    debug = bool(int(os.getenv('FLASK_DEBUG', '0')))
     print(f"\n==================================================================")
     print(f" UDAAN Academic Portal Server Running on http://127.0.0.1:{port}")
     print(f" Active Database Engine: {get_active_engine().upper()}")
