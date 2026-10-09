@@ -21,20 +21,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const newTicketForm = document.getElementById('newTicketForm');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Check auth session
-  const sessionData = localStorage.getItem('udaan_session');
-  let currentUser = { name: 'Alex Patel', role: 'support' };
-  if (sessionData) {
-    try {
-      const parsed = JSON.parse(sessionData);
-      if (parsed.name) currentUser.name = parsed.name;
-      if (parsed.role) currentUser.role = parsed.role;
+  // The server session is authoritative; browser storage is not authentication.
+  let currentUser = { name: 'Support Staff', role: 'support' };
+  fetch('/api/auth/me', { credentials: 'same-origin' })
+    .then(async res => {
+      if (!res.ok) {
+        window.location.replace('/login');
+        return;
+      }
+      const data = await res.json();
+      currentUser = data.user || currentUser;
       const staffNameEl = document.querySelector('.staff-name');
-      if (staffNameEl) staffNameEl.textContent = currentUser.name;
+      if (staffNameEl) staffNameEl.textContent = currentUser.name || 'Support Staff';
       const profNameEl = document.querySelector('.staff-profile b');
-      if (profNameEl) profNameEl.textContent = currentUser.name;
-    } catch (e) {}
-  }
+      if (profNameEl) profNameEl.textContent = currentUser.name || 'Support Staff';
+    })
+    .catch(() => window.location.replace('/login'));
 
   // Demo Tickets Database
   let tickets = [
@@ -174,8 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error('Unable to load tickets:', e);
+    }
 
+    // Do not display fabricated sample tickets when the backend is unavailable.
+    tickets = [];
     render();
   }
 
@@ -389,43 +395,34 @@ document.addEventListener('DOMContentLoaded', () => {
         'other': 'Other'
       };
 
-      const newId = `TCK-${100 + tickets.length + 1}`;
-      const newTicketObj = {
-        id: newId,
-        studentName: studentName || 'Student',
-        studentId: studentId || 'STU000',
-        category: category,
-        categoryLabel: categoryLabels[category] || 'General',
-        subjectLine: subjectLine,
-        description: description,
-        priority: priority,
-        status: 'open',
-        assignedTo: 'Unassigned',
-        createdDate: 'Just now',
-        replies: [
-          {
-            author: `${studentName} (${studentId})`,
-            role: 'student',
-            time: 'Just now',
-            message: description
-          }
-        ]
-      };
-
-      tickets.unshift(newTicketObj);
-
+      const submitButton = newTicketForm.querySelector('[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
       try {
-        await fetch('/api/support/tickets', {
+        const response = await fetch('/api/support/tickets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newTicketObj)
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            studentId,
+            category,
+            priority,
+            subjectLine,
+            description
+          })
         });
-      } catch (err) {}
-
-      render();
-      newTicketForm.reset();
-      newTicketDialog.close();
-      openTicketDetail(newId);
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || result.message || 'Unable to create ticket.');
+        }
+        newTicketForm.reset();
+        newTicketDialog.close();
+        await loadTickets();
+        openTicketDetail(result.ticket_id);
+      } catch (err) {
+        alert(err.message || 'Unable to create ticket. Please try again.');
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
   }
 
@@ -462,8 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         console.error('Logout error:', err);
       }
-      localStorage.removeItem('udaan_session');
-      sessionStorage.clear();
       window.location.replace('/login');
     });
   }
