@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UDAAN | Student Portal</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/"><span class="brand-mark">➤</span><span><b>UDAAN</b><small>Learn · Grow · Succeed</small></span></a>
+    <nav>
+      <a class="nav-link active" href="#home"><span>⌂</span> Home</a>
+      <a class="nav-link" href="#college"><span>▤</span> College Progress</a>
+      <a class="nav-link" href="#dsa"><span>⌘</span> DSA Progress</a>
+      <a class="nav-link" href="#activity"><span>◷</span> Recent Activity</a>
+    </nav>
+    <div class="sidebar-note">“Small steps every day lead to big results.”<span>✦</span></div>
+    <button class="logout" id="logoutBtn">↪ &nbsp; Log out</button>
+  </aside>
+
+  <main class="main" id="home">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">YOUR JOURNEY, YOUR PACE</p>
+        <h1>Good morning, <span class="name">Meghana</span> <span class="sun">☀</span></h1>
+        <p class="subheading">Keep going — you're building something great.</p>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" aria-label="Notifications" id="notificationBtn">♧<i></i></button>
+        <button class="focus-launch" id="openTimer"><span>◴</span> Focus Timer</button>
+        <button class="profile" id="profileBtn"><span class="avatar">M</span><span>Meghana</span><span>⌄</span></button>
+      </div>
+    </header>
+
+    <section class="top-cards">
+      <article class="mini-card streak-card">
+        <div class="round-icon flame">♨</div>
+        <div><p class="card-label">Current study streak</p><h2>7 days <span class="tiny-tag">🔥</span></h2><p class="muted">Consistency builds success!</p></div>
+        <span class="card-arrow">↗</span>
+      </article>
+      <article class="mini-card attendance-card">
+        <div class="round-icon mint">▦</div>
+        <div><p class="card-label">Overall attendance</p><h2>85%</h2><p class="muted">51 of 60 classes attended</p><div class="progress slim"><span style="width:85%"></span></div></div>
+      </article>
+      <article class="quote-card">
+        <span class="quote-mark">“</span><div><p>Discipline is the bridge between your goals and your dreams.</p><small>— Jim Rohn</small></div>
+      </article>
+    </section>
+
+    <section class="section" id="college">
+      <div class="section-heading"><div><span class="section-icon">▤</span><div><h2>College Progress</h2><p>Stay on top of your academics.</p></div></div><span class="section-hint">Your semester at a glance</span></div>
+      <div class="subjects-grid" id="subjectsGrid"></div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel dsa-panel" id="dsa">
+        <div class="panel-heading"><div><span class="section-icon blue-icon">⌘</span><div><h2>DSA Progress</h2><p>Keep solving, keep growing.</p></div></div><span class="pill blue-pill">Daily practice</span></div>
+        <div class="dsa-stats">
+          <div><span class="stat-label">Problems solved</span><strong>42</strong><small>Across platforms</small></div>
+          <div><span class="stat-label">Current streak</span><strong>7 days</strong><small>Best: 12 days</small></div>
+          <div><span class="stat-label">Today's goal</span><strong>2 / 3</strong><small>problems solved</small></div>
+        </div>
+        <div class="platform-row">
+          <div class="platform-logo leetcode">LC</div><div class="platform-info"><b>LeetCode</b><small>28 problems solved</small></div><div class="platform-progress"><div class="progress"><span style="width:56%"></span></div><small>28 / 50 goal</small></div>
+        </div>
+        <div class="platform-row">
+          <div class="platform-logo striver">S</div><div class="platform-info"><b>Striver's A2Z Sheet</b><small>Arrays, strings and basics</small></div><div class="platform-progress"><div class="progress"><span style="width:24%"></span></div><small>12 / 50 selected</small></div>
+        </div>
+        <div class="platform-row">
+          <div class="platform-logo gfg">G</div><div class="platform-info"><b>Other platforms</b><small>Track your practice manually</small></div><button class="text-btn" id="addPractice">+ Add progress</button></div>
+        <button class="primary-btn full-btn" id="practiceBtn">Continue practicing <span>→</span></button>
+      </article>
+
+      <article class="panel focus-panel">
+        <div class="panel-heading"><div><span class="section-icon mint-icon">◎</span><div><h2>Today's Focus</h2><p>A small goal is better than no goal.</p></div></div></div>
+        <div class="focus-goal"><span class="goal-label">SUGGESTED GOAL</span><h3>Revise Java Inheritance</h3><p>◷ &nbsp; 25 minutes &nbsp; · &nbsp; 2 practice questions</p></div>
+        <button class="primary-btn full-btn" id="startGoal">Start focus session <span>→</span></button>
+        <div class="encouragement"><span>✿</span><p><b>Progress, not perfection.</b><br/>Show up for yourself today.</p></div>
+      </article>
+
+      <article class="panel quick-panel">
+        <div class="panel-heading"><div><span class="section-icon gold-icon">ϟ</span><div><h2>Quick Actions</h2><p>Pick what you need right now.</p></div></div></div>
+        <button class="action-card lavender-action" id="askAi"><span class="action-icon">✦</span><span><b>AI Doubt Solver</b><small>Get help with a question</small></span><span class="action-arrow">›</span></button>
+        <button class="action-card green-action" id="addNote"><span class="action-icon">▤</span><span><b>Add a Note / Doubt</b><small>Save it to a subject</small></span><span class="action-arrow">›</span></button>
+        <button class="action-card blue-action" id="setGoal"><span class="action-icon">◎</span><span><b>Set a Study Goal</b><small>Choose today's target</small></span><span class="action-arrow">›</span></button>
+        <button class="action-card peach-action" id="reminderBtn"><span class="action-icon">♧</span><span><b>Enable Reminders</b><small>Stay consistent</small></span><span class="action-arrow">›</span></button>
+      </article>
+    </section>
+
+    <section class="panel activity-panel" id="activity">
+      <div class="panel-heading"><div><span class="section-icon">◷</span><div><h2>Recent Activity</h2><p>Your recent learning moments.</p></div></div><button class="text-btn" id="clearActivity">Clear activity</button></div>
+      <div class="activity-list" id="activityList">
+        <div class="activity-item"><span class="activity-icon java-icon">J</span><div><b>Java Programming</b><small>Reviewed inheritance notes</small></div><time>Today</time></div>
+        <div class="activity-item"><span class="activity-icon dsa-icon">⌘</span><div><b>DSA Practice</b><small>Solved a two-sum problem</small></div><time>Today</time></div>
+        <div class="activity-item"><span class="activity-icon note-icon">▤</span><div><b>Study session</b><small>Focus session completed</small></div><time>Yesterday</time></div>
+      </div>
+    </section>
+    <footer class="footer-banner"><span class="footer-leaf">✿</span><div><b>You're making progress!</b><p>Every effort counts. Keep moving toward your goals.</p></div><span class="footer-mountain">⌁　⌁　⌁</span></footer>
+    <p class="footer-note">UDAAN · Built for your growth</p>
+  </main>
+
+  <dialog id="timerDialog" class="modal timer-modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button></form>
+    <div class="modal-symbol">◴</div><p class="eyebrow center">FOCUS MODE</p><h2 class="center">One thing at a time.</h2>
+    <div class="timer-modes"><button class="mode active" data-minutes="25">Focus · 25m</button><button class="mode" data-minutes="5">Short break · 5m</button><button class="mode" data-minutes="15">Long break · 15m</button></div>
+    <div class="timer-display" id="timerDisplay">25:00</div><p class="timer-status" id="timerStatus">Ready when you are.</p>
+    <div class="timer-controls"><button class="primary-btn" id="timerStart">Start focus</button><button class="secondary-btn" id="timerReset">Reset</button></div>
+    <p class="timer-tip">Put your phone aside. Give this one task your full attention.</p>
+  </dialog>
+
+  <dialog id="subjectDialog" class="modal wide-modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button></form>
+    <p class="eyebrow">SUBJECT DETAILS</p><h2 id="subjectTitle">Java Programming</h2>
+    <div class="detail-stats" id="subjectStats"></div>
+    <h3>Topic progress</h3><div id="topicList" class="topic-list"></div>
+    <h3>My Notes & Doubts</h3><div id="subjectNotes" class="saved-notes"></div>
+    <button class="primary-btn" id="subjectAddNote">+ Add a note / doubt</button>
+  </dialog>
+
+  <dialog id="noteDialog" class="modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button></form>
+    <p class="eyebrow">NOTES & DOUBTS</p><h2>Save a doubt</h2>
+    <label for="noteSubject">Subject</label><select id="noteSubject"></select>
+    <label for="noteText">Your note or question</label><textarea id="noteText" rows="4" placeholder="Example: Why do we use super() in Java?"></textarea>
+    <button class="primary-btn full-btn" id="saveNote">Save note</button>
+  </dialog>
+
+  <dialog id="simpleDialog" class="modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button></form>
+    <p class="eyebrow" id="simpleEyebrow">UDAAN</p><h2 id="simpleTitle">Let's do this</h2><p id="simpleMessage" class="simple-message"></p>
+    <div id="simpleExtra"></div><button class="primary-btn full-btn" id="simpleDone">Got it</button>
+  </dialog>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>

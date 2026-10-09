@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDAAN | Class Teacher Portal</title>
+  <link rel="stylesheet" href="/static/css/class_teacher.css">
+  <link rel="stylesheet" href="../static/css/class_teacher.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <span class="brand-mark">➤</span>
+      <div>
+        <b>UDAAN</b>
+        <small>Learn · Grow · Succeed</small>
+      </div>
+    </a>
+    <div class="role-badge">CLASS INCHARGE</div>
+    <nav>
+      <a class="nav-link active" href="#overview"><span>⌂</span><span>Class Overview</span></a>
+      <a class="nav-link" href="#students"><span>♙</span><span>Student Roster</span></a>
+      <a class="nav-link" href="#attention"><span>⚠</span><span>Needs Attention</span></a>
+    </nav>
+    <div class="sidebar-note">
+      “Guiding every student with empathy and timely support.”
+      <span>✦</span>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span>↪</span>
+      <span>Log Out</span>
+    </button>
+  </aside>
+
+  <main class="main" id="overview">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CLASS INCHARGE WORKSPACE</p>
+        <h1>Good morning, <span class="teacher-name">Dr. Raman</span></h1>
+        <p class="subheading">Holistic class monitoring, attendance verification, and student mentoring.</p>
+      </div>
+      <div class="teacher-profile">
+        <span class="avatar">R</span>
+        <div>
+          <b>Dr. Raman</b>
+          <small style="color:var(--muted)">Class Teacher · CSE Department</small>
+        </div>
+      </div>
+    </header>
+
+    <!-- Class Selector Banner -->
+    <section class="class-banner">
+      <div class="banner-left">
+        <div class="banner-icon">🏛</div>
+        <div>
+          <p class="eyebrow">ASSIGNED CLASS & SECTION</p>
+          <h2>Class Academic Overview</h2>
+          <p class="banner-sub">Select from your officially assigned classes to view verified student records.</p>
+        </div>
+      </div>
+      <div class="select-wrap">
+        <label for="classSelect">ASSIGNED CLASS / SECTION</label>
+        <select id="classSelect" aria-label="Select Assigned Class">
+          <option value="1">B.Tech CSE · 2nd Year · Section A</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Overview Stats KPI Row (No charts, clean cards) -->
+    <section class="kpi-row">
+      <article class="kpi-card kpi-blue">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-info">
+          <small>Enrolled Students</small>
+          <strong id="totalCount">6</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-teal">
+        <div class="kpi-icon">▦</div>
+        <div class="kpi-info">
+          <small>Avg. Class Attendance</small>
+          <strong id="avgAttendance">80%</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-yellow">
+        <div class="kpi-icon">↗</div>
+        <div class="kpi-info">
+          <small>Good Academic Standing</small>
+          <strong id="goodCount">2</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-red">
+        <div class="kpi-icon">!</div>
+        <div class="kpi-info">
+          <small>Requiring Follow-up</small>
+          <strong id="lowCount">2</strong>
+        </div>
+      </article>
+    </section>
+
+    <!-- Student Roster Panel -->
+    <section class="roster-panel" id="students">
+      <div class="panel-header">
+        <div>
+          <h2>Class Student Roster & Academic Status</h2>
+          <p>Comprehensive overview of attendance, average performance, and mentoring follow-ups.</p>
+        </div>
+        <div class="panel-controls">
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input type="search" id="searchInput" placeholder="Search student name or roll no...">
+          </div>
+          <select id="filterSelect" class="filter-select" aria-label="Filter roster">
+            <option value="all">All Students</option>
+            <option value="good">Good Standing</option>
+            <option value="average">Making Progress</option>
+            <option value="low">Needs Academic Support</option>
+            <option value="low_attendance">Low Attendance (&lt; 75%)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="permission-pill">
+        <span>🔒</span>
+        <span><b>Role Permissions:</b> Class teachers have institutional viewing access across all enrolled subjects. Mark editing permissions are strictly restricted to assigned Subject Teachers.</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>STUDENT</th>
+              <th>ATTENDANCE</th>
+              <th>AVG. MARKS</th>
+              <th>STATUS</th>
+              <th>MENTORING FOLLOW-UP</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="studentRows">
+            <!-- Dynamic rows loaded by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p style="text-align:center;color:var(--muted);font-size:11px;margin-top:24px;">UDAAN &bull; Student Care & Performance Monitoring</p>
+  </main>
+
+  <!-- Student Record Detail Dialog -->
+  <dialog id="studentDialog">
+    <button class="modal-close" id="closeDialog" aria-label="Close modal">&times;</button>
+    <div id="modalDetail"></div>
+  </dialog>
+
+  <script src="/static/js/class_teacher.js"></script>
+  <script src="../static/js/class_teacher.js"></script>
+</body>
+</html>

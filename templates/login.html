@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDAAN — Sign In | Unified Academic Portal</title>
+  <link rel="stylesheet" href="/static/css/login.css">
+  <link rel="stylesheet" href="../static/css/login.css">
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="brand-section">
+      <div class="brand-mark-wrap">
+        <div class="brand-icon">➤</div>
+        <div>
+          <h1 class="brand-title">UDAAN</h1>
+          <p class="brand-tagline">Learn · Grow · Succeed</p>
+        </div>
+      </div>
+      <h2 class="welcome-title">Welcome to UDAAN Portal</h2>
+      <p class="welcome-subtitle">Select your role to access your personalized academic workspace</p>
+    </div>
+
+    <!-- Alert Message Box -->
+    <div id="alertBox" class="alert-box" role="alert"></div>
+
+    <form id="loginForm" novalidate>
+      <div class="role-section-title">
+        <span>1. Choose your account role</span>
+        <span style="font-size: 10px; color: var(--primary); font-weight: 800;">REQUIRED</span>
+      </div>
+
+      <!-- 4 Role Selector Cards -->
+      <div class="role-grid">
+        <div class="role-card active" data-role="student" tabindex="0">
+          <div class="role-card-icon">🎓</div>
+          <div class="role-card-info">
+            <h4>Student</h4>
+            <p>Academics, DSA, attendance & goals</p>
+          </div>
+        </div>
+
+        <div class="role-card" data-role="class_teacher" tabindex="0">
+          <div class="role-card-icon">🏛</div>
+          <div class="role-card-info">
+            <h4>Class Teacher</h4>
+            <p>Class overview & student monitoring</p>
+          </div>
+        </div>
+
+        <div class="role-card" data-role="subject_teacher" tabindex="0">
+          <div class="role-card-icon">📊</div>
+          <div class="role-card-info">
+            <h4>Subject Teacher</h4>
+            <p>Subject marks, attendance & warnings</p>
+          </div>
+        </div>
+
+        <div class="role-card" data-role="support" tabindex="0">
+          <div class="role-card-icon">🎧</div>
+          <div class="role-card-info">
+            <h4>Support Line</h4>
+            <p>Tickets, student concerns & guidance</p>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="selectedRole" name="role" value="student">
+
+      <div class="form-group">
+        <label for="username" class="form-label">Username or Institutional Email</label>
+        <div class="input-wrapper">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" name="username" class="form-input" placeholder="e.g. student1 or teacher_priya" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+          <button type="button" id="togglePassword" class="password-toggle" aria-label="Toggle password visibility">Show</button>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">
+        <span>Sign In to UDAAN</span>
+        <span>→</span>
+      </button>
+
+      <!-- Quick Demo Credentials Picker -->
+      <div class="demo-accounts">
+        <div class="demo-title">
+          <span>Quick Demo Logins (Click to Autofill)</span>
+          <span>✦</span>
+        </div>
+        <div class="demo-pills">
+          <button type="button" class="demo-pill" data-role="student" data-user="student1" data-pass="student123">
+            <strong>🎓 Student</strong>
+            <span>student1 &bull; student123</span>
+          </button>
+          <button type="button" class="demo-pill" data-role="class_teacher" data-user="teacher_class" data-pass="class123">
+            <strong>🏛 Class Teacher</strong>
+            <span>teacher_class &bull; class123</span>
+          </button>
+          <button type="button" class="demo-pill" data-role="subject_teacher" data-user="teacher_priya" data-pass="priya123">
+            <strong>📊 Subject Teacher</strong>
+            <span>teacher_priya &bull; priya123</span>
+          </button>
+          <button type="button" class="demo-pill" data-role="support" data-user="support_staff" data-pass="support123">
+            <strong>🎧 Support Line</strong>
+            <span>support_staff &bull; support123</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <p class="footer-text">UDAAN &bull; Unified Academic Performance & Student Care Platform</p>
+  </div>
+
+  <script src="/static/js/login.js"></script>
+  <script src="../static/js/login.js"></script>
+</body>
+</html>

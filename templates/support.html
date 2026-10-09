@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDAAN | Support Line Portal</title>
+  <link rel="stylesheet" href="/static/css/support.css">
+  <link rel="stylesheet" href="../static/css/support.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <span class="brand-mark">➤</span>
+      <div>
+        <b>UDAAN</b>
+        <small>Learn · Grow · Succeed</small>
+      </div>
+    </a>
+    <div class="role-badge">STUDENT CARE & SUPPORT</div>
+    <nav>
+      <a class="nav-link active" href="#tickets"><span>🎧</span><span>Ticket Queue</span></a>
+      <a class="nav-link" href="#categories"><span>▦</span><span>Categories</span></a>
+      <a class="nav-link" href="#counseling"><span>✿</span><span>Guidance & Care</span></a>
+    </nav>
+    <div class="sidebar-note">
+      “No student should walk through challenges alone.”
+      <span>✦</span>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span>↪</span>
+      <span>Log Out</span>
+    </button>
+  </aside>
+
+  <main class="main" id="tickets">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SUPPORT LINE & STUDENT CARE</p>
+        <h1>Good morning, <span class="staff-name">Alex Patel</span></h1>
+        <p class="subheading">Track concerns, provide academic guidance, and resolve student support requests.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn-new-ticket" id="btnNewTicket">
+          <span>+</span>
+          <span>Submit Support Ticket</span>
+        </button>
+        <div class="staff-profile">
+          <span class="avatar">A</span>
+          <div>
+            <b>Alex Patel</b>
+            <small style="color:var(--muted)">Support Staff &bull; Student Care</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Summary Row -->
+    <section class="kpi-row">
+      <article class="kpi-card kpi-blue">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-info">
+          <small>Total Inquiries</small>
+          <strong id="totalTickets">5</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-yellow">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-info">
+          <small>Open / Unresolved</small>
+          <strong id="openTickets">2</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-teal">
+        <div class="kpi-icon">💬</div>
+        <div class="kpi-info">
+          <small>In Progress & Assigned</small>
+          <strong id="inProgressTickets">2</strong>
+        </div>
+      </article>
+
+      <article class="kpi-card kpi-green">
+        <div class="kpi-icon">✓</div>
+        <div class="kpi-info">
+          <small>Successfully Resolved</small>
+          <strong id="resolvedTickets">1</strong>
+        </div>
+      </article>
+    </section>
+
+    <!-- Tickets Management Panel -->
+    <section class="tickets-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Student Support Ticket Queue</h2>
+          <p>Review inquiries by category, monitor status, and post counseling guidance.</p>
+        </div>
+        <div class="panel-controls">
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input type="search" id="searchInput" placeholder="Search ticket ID or student...">
+          </div>
+          <select id="statusFilter" class="filter-select" aria-label="Filter status">
+            <option value="all">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+          <select id="categoryFilter" class="filter-select" aria-label="Filter category">
+            <option value="all">All Categories</option>
+            <option value="academic_difficulty">Academic Difficulty</option>
+            <option value="technical_issue">Technical Issue</option>
+            <option value="attendance_concern">Attendance Concern</option>
+            <option value="personal_support">Personal Support Request</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TICKET ID</th>
+              <th>STUDENT</th>
+              <th>CATEGORY</th>
+              <th>SUBJECT / CONCERN</th>
+              <th>PRIORITY</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="ticketRows">
+            <!-- Dynamic rows populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p style="text-align:center;color:var(--muted);font-size:11px;margin-top:24px;">UDAAN &bull; Student Care & Support Helpdesk</p>
+  </main>
+
+  <!-- Ticket Detail & Reply Thread Dialog -->
+  <dialog id="ticketDetailDialog">
+    <button class="modal-close" id="closeDetailDialog">&times;</button>
+    <div id="ticketDetailContent"></div>
+  </dialog>
+
+  <!-- New Ticket Submission Dialog -->
+  <dialog id="newTicketDialog">
+    <button class="modal-close" id="closeNewTicketDialog">&times;</button>
+    <div class="modal-header">
+      <div>
+        <h2 style="font-size:20px;">Submit Student Support Request</h2>
+        <p style="color:var(--muted);font-size:12px;">Create an academic assistance, counseling, or technical inquiry ticket.</p>
+      </div>
+    </div>
+    <form id="newTicketForm" style="margin-top:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label for="newStudentName">Student Name</label>
+          <input type="text" id="newStudentName" placeholder="e.g. Aarav Reddy" required>
+        </div>
+        <div class="form-group">
+          <label for="newStudentId">Roll Number / Student ID</label>
+          <input type="text" id="newStudentId" placeholder="e.g. CSE2401" required>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label for="newCategory">Category</label>
+          <select id="newCategory" required>
+            <option value="academic_difficulty">Academic Difficulty</option>
+            <option value="technical_issue">Technical Issue</option>
+            <option value="attendance_concern">Attendance Concern</option>
+            <option value="personal_support">Personal Support Request</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newPriority">Priority Level</label>
+          <select id="newPriority" required>
+            <option value="medium">Medium</option>
+            <option value="high">Urgent / High</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="newSubjectLine">Subject Line</label>
+        <input type="text" id="newSubjectLine" placeholder="Brief summary of the issue or guidance needed" required>
+      </div>
+
+      <div class="form-group">
+        <label for="newDescription">Detailed Concern or Question</label>
+        <textarea id="newDescription" rows="4" placeholder="Explain the specific issue, subject, or assistance required in detail..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn-new-ticket" style="width:100%;justify-content:center;padding:14px;">
+        Submit Ticket to Support Team &rarr;
+      </button>
+    </form>
+  </dialog>
+
+  <script src="/static/js/support.js"></script>
+  <script src="../static/js/support.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UDAAN | Subject Teacher</title><link rel="stylesheet" href="subject_teacher.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="index.html"><span class="brand-mark">➤</span><span><b>UDAAN</b><small>Learn · Grow · Succeed</small></span></a>
+  <div class="role-label">TEACHER WORKSPACE</div>
+  <nav><a class="nav-link active" href="#students">▦ &nbsp; Subject overview</a><a class="nav-link" href="#students">♙ &nbsp; Student progress</a></nav>
+  <div class="sidebar-note">“Every student can grow with the right support.”<span>✦</span></div>
+  <a class="logout" href="index.html">↪ &nbsp; Back to student portal</a>
+</aside>
+<main class="main" id="students">
+  <header class="topbar"><div><p class="eyebrow">SUBJECT TEACHER WORKSPACE</p><h1>Good morning, <span>Ms. Priya</span></h1><p class="subheading">A clear view of progress. A better way to support every student.</p></div><div class="teacher-profile"><span class="avatar">P</span><span><b>Ms. Priya</b><small>Subject Teacher</small></span></div></header>
+  <section class="subject-banner"><div><span class="subject-icon">⌘</span><div><p class="eyebrow">YOUR SUBJECT</p><h2 id="subjectTitle">Data Structures & Algorithms</h2><p class="banner-sub">Review performance and follow up where it matters.</p></div></div><label class="select-wrap">CLASS / SECTION<select id="classSelect"><option value="all">All assigned classes</option><option value="CSE-A">B.Tech CSE · 2nd Year · A</option><option value="CSE-B">B.Tech CSE · 2nd Year · B</option><option value="CSE-C">B.Tech CSE · 2nd Year · C</option></select></label></section>
+  <section class="summary-row"><article class="summary-card"><span class="summary-icon">♙</span><div><small>Students in view</small><strong id="totalCount">12</strong></div></article><article class="summary-card red-summary"><span class="summary-icon">!</span><div><small>Need support</small><strong id="lowCount">4</strong></div></article><article class="summary-card yellow-summary"><span class="summary-icon">↗</span><div><small>Making progress</small><strong id="averageCount">4</strong></div></article><article class="summary-card green-summary"><span class="summary-icon">✓</span><div><small>Doing well</small><strong id="goodCount">4</strong></div></article></section>
+  <section class="list-panel"><div class="list-header"><div><h2>Student progress</h2><p>Students needing the most support appear first.</p></div><div class="tools"><label class="search-box">⌕ <input id="searchInput" type="search" placeholder="Search student name or ID"></label><select id="statusFilter" aria-label="Filter by performance"><option value="all">All performance</option><option value="low">Low marks</option><option value="average">Average marks</option><option value="good">Good marks</option><option value="warning">Early warning: falling marks</option></select></div></div>
+  <div class="legend"><span><i class="dot low-dot"></i> Low marks</span><span><i class="dot average-dot"></i> Average marks</span><span><i class="dot good-dot"></i> Good marks</span><span><i class="dot warning-dot"></i> Falling marks warning</span><small>Demo data · Replace with your college records</small></div>
+  <div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>CLASS</th><th>LAST MARKS</th><th>SUBJECT ATTENDANCE</th><th>STATUS</th><th></th></tr></thead><tbody id="studentRows"></tbody></table></div><div class="mobile-hint">Select a student to view their complete subject record.</div>
+  </section><p class="footer-note">UDAAN · Early support starts with clear information.</p>
+</main>
+<dialog id="studentDialog"><button class="close" id="closeDialog" aria-label="Close">×</button><div id="studentDetail"></div></dialog>
+<script src="subject_teacher.js"></script>
+</body></html>

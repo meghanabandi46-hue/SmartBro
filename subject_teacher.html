@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDAAN | Subject Teacher Portal</title>
+  <link rel="stylesheet" href="static/css/subject_teacher.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <span class="brand-mark">➤</span>
+      <div>
+        <b>UDAAN</b>
+        <small>Learn · Grow · Succeed</small>
+      </div>
+    </a>
+    <div class="role-label">SUBJECT FACULTY</div>
+    <nav>
+      <a class="nav-link active" href="#students"><span>▦</span><span>Subject overview</span></a>
+      <a class="nav-link" href="#students"><span>♙</span><span>Student progress</span></a>
+    </nav>
+    <div class="sidebar-note">
+      “Every student can grow with the right support and early guidance.”
+      <span>✦</span>
+    </div>
+    <a class="logout" id="logoutBtn" href="/logout">
+      <span>↪</span>
+      <span>Log out</span>
+    </a>
+  </aside>
+
+  <main class="main" id="students">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SUBJECT TEACHER WORKSPACE</p>
+        <h1>Good morning, <span>Ms. Priya</span></h1>
+        <p class="subheading">A clear view of progress. A better way to support every student.</p>
+      </div>
+      <div class="teacher-profile">
+        <span class="avatar">P</span>
+        <div>
+          <b>Ms. Priya</b>
+          <small>Subject Teacher · CSE Dept</small>
+        </div>
+      </div>
+    </header>
+
+    <!-- Enhanced Banner with Assigned Class & Authorized Subject Selectors -->
+    <section class="subject-banner">
+      <div>
+        <span class="subject-icon">⌘</span>
+        <div>
+          <p class="eyebrow">YOUR SUBJECT & ASSIGNMENTS</p>
+          <h2 id="subjectTitle">Data Structures & Algorithms</h2>
+          <p class="banner-sub">Review performance and follow up where it matters.</p>
+        </div>
+      </div>
+      <div class="selectors-group">
+        <label class="select-wrap" for="classSelect">
+          ASSIGNED CLASS / SECTION
+          <select id="classSelect" aria-label="Select Assigned Class">
+            <option value="CSE-A">B.Tech CSE · 2nd Year · Section A</option>
+            <option value="CSE-B">B.Tech CSE · 2nd Year · Section B</option>
+            <option value="ECE-A">B.Tech ECE · 2nd Year · Section A</option>
+          </select>
+        </label>
+        <label class="select-wrap" for="subjectSelect">
+          AUTHORIZED SUBJECT
+          <select id="subjectSelect" aria-label="Select Authorized Subject">
+            <option value="DSA">Data Structures & Algorithms</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- KPI Summary Cards -->
+    <section class="summary-row">
+      <article class="summary-card">
+        <span class="summary-icon">♙</span>
+        <div>
+          <small>Students in view</small>
+          <strong id="totalCount">6</strong>
+        </div>
+      </article>
+
+      <article class="summary-card red-summary">
+        <span class="summary-icon">!</span>
+        <div>
+          <small>Need support</small>
+          <strong id="lowCount">3</strong>
+        </div>
+      </article>
+
+      <article class="summary-card yellow-summary">
+        <span class="summary-icon">↗</span>
+        <div>
+          <small>Making progress</small>
+          <strong id="averageCount">1</strong>
+        </div>
+      </article>
+
+      <article class="summary-card green-summary">
+        <span class="summary-icon">✓</span>
+        <div>
+          <small>Doing well</small>
+          <strong id="goodCount">2</strong>
+        </div>
+      </article>
+    </section>
+
+    <!-- Student List Panel -->
+    <section class="list-panel">
+      <div class="list-header">
+        <div>
+          <h2>Student progress</h2>
+          <p>Students needing the most support and those with early-warning alerts appear first.</p>
+        </div>
+        <div class="tools">
+          <label class="search-box">
+            ⌕ <input id="searchInput" type="search" placeholder="Search student name or ID">
+          </label>
+          <select id="statusFilter" aria-label="Filter by performance">
+            <option value="all">All performance</option>
+            <option value="warning">Early warning: falling marks</option>
+            <option value="low">Low marks (&lt; 40)</option>
+            <option value="average">Average marks (40 - 70)</option>
+            <option value="good">Good marks (&ge; 70)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="dot low-dot"></i> Low marks</span>
+        <span><i class="dot average-dot"></i> Average marks</span>
+        <span><i class="dot good-dot"></i> Good marks</span>
+        <span><i class="dot warning-dot"></i> 3-Assessment decline warning</span>
+        <small>Early support starts with clear information</small>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>STUDENT</th>
+              <th>CLASS</th>
+              <th>LAST MARKS</th>
+              <th>SUBJECT ATTENDANCE</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="studentRows"></tbody>
+        </table>
+      </div>
+      <div class="mobile-hint">Select a student to view their complete subject record.</div>
+    </section>
+
+    <p class="footer-note">UDAAN · Early support starts with clear information.</p>
+  </main>
+
+  <!-- Student Record Detail Dialog -->
+  <dialog id="studentDialog">
+    <button class="close" id="closeDialog" aria-label="Close">×</button>
+    <div id="studentDetail"></div>
+  </dialog>
+
+  <script src="static/js/subject_teacher.js"></script>
+</body>
+</html>
