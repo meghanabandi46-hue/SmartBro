@@ -1,5 +1,4 @@
 import os
-import re
 import socket
 import sqlite3
 from config import Config
@@ -15,23 +14,25 @@ def is_mysql_reachable(host, port, timeout=0.8):
         return False
 
 def get_mysql_connection():
-    """Attempt to establish a connection to MySQL."""
+    """Connect to MySQL or fail loudly; never silently switch databases."""
     if not is_mysql_reachable(Config.MYSQL_HOST, Config.MYSQL_PORT):
-        return None
+        raise RuntimeError(
+            f"MySQL is not reachable at {Config.MYSQL_HOST}:{Config.MYSQL_PORT}. "
+            "Check the service and DB_ENGINE configuration."
+        )
     try:
         import mysql.connector
-        conn = mysql.connector.connect(
+        return mysql.connector.connect(
             host=Config.MYSQL_HOST,
             port=Config.MYSQL_PORT,
             user=Config.MYSQL_USER,
             password=Config.MYSQL_PASSWORD,
             database=Config.MYSQL_DATABASE,
-            connection_timeout=2,
+            connection_timeout=3,
             autocommit=True
         )
-        return conn
-    except Exception as e:
-        return None
+    except Exception as exc:
+        raise RuntimeError("Unable to connect to the configured MySQL database.") from exc
 
 def get_sqlite_connection():
     """Establish connection to SQLite development database."""
@@ -42,28 +43,17 @@ def get_sqlite_connection():
     return conn
 
 def get_db():
-    """
-    Returns an active database connection.
-    Attempts MySQL first unless configured for SQLite or MySQL is unreachable.
-    """
+    """Open only the explicitly configured database; fail closed on bad config."""
     global ACTIVE_ENGINE
-
-    if Config.DB_ENGINE == 'sqlite':
+    engine = Config.DB_ENGINE
+    if engine == 'sqlite':
         ACTIVE_ENGINE = 'sqlite'
         return get_sqlite_connection()
-
-    if Config.DB_ENGINE in ('mysql', 'auto'):
-        mysql_conn = get_mysql_connection()
-        if mysql_conn is not None:
-            ACTIVE_ENGINE = 'mysql'
-            return mysql_conn
-        
-        # MySQL unavailable - fallback to SQLite
-        ACTIVE_ENGINE = 'sqlite'
-        return get_sqlite_connection()
-
-    ACTIVE_ENGINE = 'sqlite'
-    return get_sqlite_connection()
+    if engine == 'mysql':
+        conn = get_mysql_connection()
+        ACTIVE_ENGINE = 'mysql'
+        return conn
+    raise RuntimeError("DB_ENGINE must be explicitly set to 'sqlite' or 'mysql'.")
 
 def get_active_engine():
     global ACTIVE_ENGINE

@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 
@@ -7,26 +8,32 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from werkzeug.security import generate_password_hash
 from database.db import get_db, execute, query_one, get_active_engine, init_sqlite_schema
 
-def seed():
+def seed(reset=False):
     conn = get_db()
     engine = get_active_engine()
     print(f"[*] Initializing and seeding database using engine: {engine.upper()}")
 
     if engine == 'sqlite':
         init_sqlite_schema(conn)
+    conn.close()
 
-    # 1. Clear existing demo data in reverse dependency order
+    existing = query_one("SELECT COUNT(*) AS cnt FROM users")
+    if existing and existing['cnt'] and not reset:
+        raise RuntimeError(
+            "The database already contains users. Seeding will not delete data by default. "
+            "Use --reset only on a disposable demo database."
+        )
+
+    # Destructive reset is opt-in and only for disposable demo databases.
     tables = [
         'ticket_replies', 'support_tickets', 'class_teacher_notes', 'student_notes',
         'student_topic_progress', 'topics', 'attendance', 'marks', 'assessments',
         'teacher_subject_assignments', 'class_teacher_assignments', 'teachers',
         'students', 'subjects', 'classes', 'users'
     ]
-    for tbl in tables:
-        try:
+    if reset:
+        for tbl in tables:
             execute(f"DELETE FROM {tbl};")
-        except Exception as e:
-            pass
 
     print("[*] Inserting safe demo users with hashed passwords...")
     # Demo Users
@@ -425,4 +432,11 @@ def seed():
     print("[OK] Database seeded successfully with complete multi-role academic records!")
 
 if __name__ == '__main__':
-    seed()
+    parser = argparse.ArgumentParser(description="Seed disposable UDAAN demo data.")
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="Delete existing records before seeding. Use only with a disposable demo database."
+    )
+    args = parser.parse_args()
+    seed(reset=args.reset)
